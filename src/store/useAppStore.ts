@@ -36,6 +36,7 @@ interface AppState {
   buyPackage: (amount: number) => void;
   setUpiId: (upi: string) => void;
   withdraw: (amount: number) => void;
+  deposit: (amount: number) => void;
 }
 
 const generateId = () => Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -119,6 +120,13 @@ export const useAppStore = create<AppState>()(
           balance: Math.round((s.balance - amount) * 100) / 100,
           withdrawTotal: Math.round((s.withdrawTotal + amount) * 100) / 100,
         });
+      },
+
+      deposit: (amount: number) => {
+        set(s => ({
+          balance: Math.round((s.balance + amount) * 100) / 100,
+          depositTotal: Math.round((s.depositTotal + amount) * 100) / 100,
+        }));
       },
     }),
     { name: 'rummy-pay-store' }
