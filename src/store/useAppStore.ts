@@ -121,6 +121,13 @@ export const useAppStore = create<AppState>()(
           withdrawTotal: Math.round((s.withdrawTotal + amount) * 100) / 100,
         });
       },
+
+      deposit: (amount: number) => {
+        set(s => ({
+          balance: Math.round((s.balance + amount) * 100) / 100,
+          depositTotal: Math.round((s.depositTotal + amount) * 100) / 100,
+        }));
+      },
     }),
     { name: 'rummy-pay-store' }
   )
