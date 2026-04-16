@@ -42,6 +42,7 @@ const App = () => (
             <Route path="/team" element={<Team />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/withdrawal" element={<Withdrawal />} />
+            <Route path="/deposit" element={<Deposit />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
