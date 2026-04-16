@@ -10,7 +10,6 @@ import Team from "@/pages/Team";
 import Profile from "@/pages/Profile";
 import Withdrawal from "@/pages/Withdrawal";
 import Deposit from "@/pages/Deposit";
-import NotFound from "@/pages/NotFound";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 import { useAppStore } from "@/store/useAppStore";
@@ -43,6 +42,7 @@ const App = () => (
             <Route path="/team" element={<Team />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/withdrawal" element={<Withdrawal />} />
+            <Route path="/deposit" element={<Deposit />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
