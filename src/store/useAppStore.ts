@@ -36,6 +36,7 @@ interface AppState {
   buyPackage: (amount: number) => void;
   setUpiId: (upi: string) => void;
   withdraw: (amount: number) => void;
+  deposit: (amount: number) => void;
 }
 
 const generateId = () => Math.random().toString(36).substring(2, 8).toUpperCase();
