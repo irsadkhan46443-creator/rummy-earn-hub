@@ -38,7 +38,7 @@ const Deposit = () => {
     setStep('confirm');
   };
 
-  const upiId = 'rummypay@ybl';
+  const upiId = '8209173882@ybl';
 
   if (step === 'confirm') {
     return (
