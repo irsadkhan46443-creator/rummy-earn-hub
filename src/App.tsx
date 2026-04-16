@@ -11,6 +11,7 @@ import Profile from "@/pages/Profile";
 import Withdrawal from "@/pages/Withdrawal";
 import Deposit from "@/pages/Deposit";
 import Login from "@/pages/Login";
+import Install from "@/pages/Install";
 import NotFound from "@/pages/NotFound";
 import { useAppStore } from "@/store/useAppStore";
 
