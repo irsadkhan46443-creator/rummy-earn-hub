@@ -10,7 +10,6 @@ import Team from "@/pages/Team";
 import Profile from "@/pages/Profile";
 import Withdrawal from "@/pages/Withdrawal";
 import Deposit from "@/pages/Deposit";
-import NotFound from "@/pages/NotFound";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 import { useAppStore } from "@/store/useAppStore";
