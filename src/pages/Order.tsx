@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { MERCHANT_NAME, MERCHANT_UPI_ID, openUpiApp } from '@/lib/upi';
 
 const packages = [
   { price: 300, reward: 27, bonus: 45 },
@@ -11,15 +13,40 @@ const packages = [
   { price: 1300, reward: 117, bonus: 195 },
 ];
 
+type Pkg = (typeof packages)[number];
+
 const Order = () => {
   const [tab, setTab] = useState<'UPI' | 'USDT'>('UPI');
+  const [selected, setSelected] = useState<Pkg | null>(null);
+  const [paying, setPaying] = useState(false);
   const buyPackage = useAppStore((s) => s.buyPackage);
 
-  const handleBuy = (amount: number) => {
-    const result = (buyPackage as any)(amount);
-    toast.success(`Order Placed! ${result?.orderNo || 'Success'}`, {
-      description: `₹${amount} package purchased. Reward + Bonus added to wallet!`,
-    });
+  const handleBuy = (pkg: Pkg) => {
+    if (tab === 'USDT') {
+      const result = (buyPackage as any)(pkg.price);
+      toast.success(`Order Placed! ${result?.orderNo || 'Success'}`, {
+        description: `₹${pkg.price} package purchased. Reward + Bonus added to wallet!`,
+      });
+      return;
+    }
+    setSelected(pkg);
+  };
+
+  const handlePayNow = async () => {
+    if (!selected) return;
+    const amount = selected.price; // exact payable amount from the selected order
+    setPaying(true);
+    const opened = await openUpiApp(amount, `Order ${MERCHANT_NAME} ₹${amount}`);
+    setPaying(false);
+    if (opened) {
+      toast.info('Complete the payment in your UPI app', {
+        description: 'Your order stays pending until the payment is confirmed.',
+      });
+    } else {
+      toast.error('No UPI app found', {
+        description: `Open this page on your Android phone, or pay manually to ${MERCHANT_UPI_ID}.`,
+      });
+    }
   };
 
   return (
@@ -68,7 +95,7 @@ const Order = () => {
                 </div>
               </div>
               <button
-                onClick={() => handleBuy(pkg.price)}
+                onClick={() => handleBuy(pkg)}
                 className="rounded-xl px-6 py-2.5 text-sm font-bold text-primary-foreground gradient-green shadow-md"
               >
                 Buy
@@ -77,6 +104,42 @@ const Order = () => {
           </div>
         ))}
       </div>
+
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-[340px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-black">Confirm Payment</DialogTitle>
+          </DialogHeader>
+          {selected && (
+            <div className="space-y-3">
+              <div className="rounded-2xl bg-muted p-4 text-center">
+                <p className="text-xs text-muted-foreground">Payable amount</p>
+                <p className="mt-1 text-3xl font-black text-rummy-green">₹{selected.price.toFixed(2)}</p>
+              </div>
+              <div className="space-y-1.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Pay to</span>
+                  <span className="font-semibold text-foreground">{MERCHANT_NAME}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">UPI ID</span>
+                  <span className="font-semibold text-foreground">{MERCHANT_UPI_ID}</span>
+                </div>
+              </div>
+              <button
+                onClick={handlePayNow}
+                disabled={paying}
+                className="w-full rounded-xl py-3.5 text-sm font-bold text-primary-foreground gradient-green shadow-md disabled:opacity-60"
+              >
+                {paying ? 'Opening UPI app…' : 'PAY NOW'}
+              </button>
+              <p className="text-center text-[11px] text-muted-foreground">
+                Order is confirmed only after the payment is verified.
+              </p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
