@@ -95,7 +95,7 @@ const Order = () => {
                 </div>
               </div>
               <button
-                onClick={() => handleBuy(pkg.price)}
+                onClick={() => handleBuy(pkg)}
                 className="rounded-xl px-6 py-2.5 text-sm font-bold text-primary-foreground gradient-green shadow-md"
               >
                 Buy
