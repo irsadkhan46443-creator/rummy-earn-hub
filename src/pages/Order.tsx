@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { MERCHANT_NAME, MERCHANT_UPI_ID, openUpiApp } from '@/lib/upi';
 
 const packages = [
   { price: 300, reward: 27, bonus: 45 },
@@ -11,15 +13,40 @@ const packages = [
   { price: 1300, reward: 117, bonus: 195 },
 ];
 
+type Pkg = (typeof packages)[number];
+
 const Order = () => {
   const [tab, setTab] = useState<'UPI' | 'USDT'>('UPI');
+  const [selected, setSelected] = useState<Pkg | null>(null);
+  const [paying, setPaying] = useState(false);
   const buyPackage = useAppStore((s) => s.buyPackage);
 
-  const handleBuy = (amount: number) => {
-    const result = (buyPackage as any)(amount);
-    toast.success(`Order Placed! ${result?.orderNo || 'Success'}`, {
-      description: `₹${amount} package purchased. Reward + Bonus added to wallet!`,
-    });
+  const handleBuy = (pkg: Pkg) => {
+    if (tab === 'USDT') {
+      const result = (buyPackage as any)(pkg.price);
+      toast.success(`Order Placed! ${result?.orderNo || 'Success'}`, {
+        description: `₹${pkg.price} package purchased. Reward + Bonus added to wallet!`,
+      });
+      return;
+    }
+    setSelected(pkg);
+  };
+
+  const handlePayNow = async () => {
+    if (!selected) return;
+    const amount = selected.price; // exact payable amount from the selected order
+    setPaying(true);
+    const opened = await openUpiApp(amount, `Order ${MERCHANT_NAME} ₹${amount}`);
+    setPaying(false);
+    if (opened) {
+      toast.info('Complete the payment in your UPI app', {
+        description: 'Your order stays pending until the payment is confirmed.',
+      });
+    } else {
+      toast.error('No UPI app found', {
+        description: `Open this page on your Android phone, or pay manually to ${MERCHANT_UPI_ID}.`,
+      });
+    }
   };
 
   return (
