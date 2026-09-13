@@ -104,6 +104,42 @@ const Order = () => {
           </div>
         ))}
       </div>
+
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-[340px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-black">Confirm Payment</DialogTitle>
+          </DialogHeader>
+          {selected && (
+            <div className="space-y-3">
+              <div className="rounded-2xl bg-muted p-4 text-center">
+                <p className="text-xs text-muted-foreground">Payable amount</p>
+                <p className="mt-1 text-3xl font-black text-rummy-green">₹{selected.price.toFixed(2)}</p>
+              </div>
+              <div className="space-y-1.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Pay to</span>
+                  <span className="font-semibold text-foreground">{MERCHANT_NAME}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">UPI ID</span>
+                  <span className="font-semibold text-foreground">{MERCHANT_UPI_ID}</span>
+                </div>
+              </div>
+              <button
+                onClick={handlePayNow}
+                disabled={paying}
+                className="w-full rounded-xl py-3.5 text-sm font-bold text-primary-foreground gradient-green shadow-md disabled:opacity-60"
+              >
+                {paying ? 'Opening UPI app…' : 'PAY NOW'}
+              </button>
+              <p className="text-center text-[11px] text-muted-foreground">
+                Order is confirmed only after the payment is verified.
+              </p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
